@@ -1,0 +1,8 @@
+@import "../../styles/mixins";
+@import "../../styles/functions";
+
+.back-button {
+  @include flex($gap: toRem(6));
+  margin-bottom: toRem(22);
+  cursor: pointer;
+}

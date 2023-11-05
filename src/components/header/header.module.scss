@@ -1,0 +1,24 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+@import "../../styles/functions";
+
+.header {
+  background: $app-white;
+  width: 100%;
+  max-width: 2560px;
+  position: fixed;
+  top: 0;
+  padding: toRem(18) toRem(36);
+  @include flex($justifyContent: space-between);
+  border-bottom: toRem(1) solid $standard-border;
+  z-index: 9;
+  .details-area {
+    @include flex($gap: toRem(24));
+    .user-icon {
+      padding: toRem(7) toRem(15);
+      border-radius: 50%;
+      border: toRem(1) solid $app-black;
+      cursor: pointer;
+    }
+  }
+}

@@ -1,0 +1,70 @@
+@import "../../styles/functions";
+@import "../../styles/mixins";
+@import "../../styles/variables";
+
+.podcast-details {
+  @include flex($direction: column, $alignItems: flex-start);
+  .divider {
+    width: 100%;
+    border: toRem(1) solid $standard-border;
+    margin-top: toRem(48);
+    margin-bottom: toRem(32);
+  }
+  .title-timestamp-thumbnail {
+    @include flex($alignItems: flex-start, $gap: toRem(24));
+    .podcast-thumbnail {
+      width: toRem(140);
+      height: toRem(140);
+      border-radius: toRem(4);
+      object-fit: cover;
+    }
+    .podcast-timestamp {
+      @include flex($justifyContent: flex-start, $gap: toRem(16));
+      &-label {
+        @include flex($gap: toRem(4));
+      }
+    }
+    .button-container {
+      margin-top: toRem(32);
+      @include flex(
+        $direction: row,
+        $justifyContent: flex-start,
+        $gap: toRem(16)
+      );
+      .edit-details-button {
+        background: $orange;
+      }
+    }
+  }
+  .generated-details-container {
+    @include flex(
+      $alignItems: flex-start,
+      $justifyContent: flex-start,
+      $gap: toRem(48)
+    );
+    .generated-options-container {
+      width: toRem(270);
+      .options-section {
+        @include flex(
+          $direction: column,
+          $alignItems: flex-start,
+          $gap: toRem(16)
+        );
+        .option {
+          width: 100%;
+          cursor: pointer;
+          padding: toRem(8) toRem(12);
+          border-radius: toRem(10);
+          @include flex(
+            $justifyContent: flex-start,
+            $alignItems: flex-start,
+            $gap: toRem(16)
+          );
+          &.selected {
+            background: $option-select-background;
+          }
+        }
+      }
+    }
+  }
+}

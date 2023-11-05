@@ -1,0 +1,26 @@
+@import "../../styles/functions";
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+.app-button {
+  padding: toRem(12) toRem(18);
+  @include flex($gap: toRem(6));
+  border: none;
+  cursor: pointer;
+  &.default {
+    background: $primary;
+  }
+  &.alternate {
+    background: $blue;
+  }
+  &.rounded {
+    border-radius: toRem(30);
+  }
+  &.curved {
+    border-radius: toRem(8);
+  }
+  &:disabled {
+    background: $input-placeholder;
+    cursor: not-allowed;
+  }
+}

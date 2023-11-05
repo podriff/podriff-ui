@@ -1,0 +1,53 @@
+@import "../../styles/functions";
+@import "../../styles/variables";
+
+.variant-p,
+.variant-a {
+  font-size: toRem(16);
+  line-height: toRem(24);
+  font-family: Inter-SemiBold, sans-serif;
+}
+.variant-span {
+  font-size: toRem(14);
+  line-height: toRem(20);
+  font-family: Inter-Medium, sans-serif;
+}
+.variant-h1,
+.variant-h2,
+.variant-h3,
+.variant-h4,
+.variant-h5,
+.variant-h6 {
+  line-height: 130%;
+  font-family: Inter-Bold, sans-serif;
+}
+.variant-h1 {
+  font-size: toRem(34);
+}
+.variant-h2 {
+  font-size: toRem(30);
+}
+.variant-h3 {
+  font-size: toRem(24);
+}
+.variant-h4 {
+  font-size: toRem(20);
+}
+.variant-h5 {
+  font-size: toRem(18);
+}
+.variant-h6 {
+  font-size: toRem(16);
+}
+.typo-color-black {
+  color: $text-black;
+}
+.typo-color-white {
+  color: $app-white;
+}
+.typo-color-black-light {
+  color: $text-black-light;
+}
+.typo-color-gray {
+  color: $upload-file-instructions;
+}

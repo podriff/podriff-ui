@@ -1,0 +1,55 @@
+@import "../../../../styles/functions";
+@import "../../../../styles/mixins";
+@import "../../../../styles/variables";
+
+.rss-results-page {
+  @include flex($direction: column, $alignItems: flex-start);
+  .page-title {
+    margin-bottom: toRem(22);
+  }
+  .feeds-list-card {
+    background: $app-white;
+    border: toRem(1) solid $standard-border;
+    border-radius: toRem(6);
+    width: 100%;
+    padding: toRem(20) toRem(32) toRem(32);
+    .search-input-field {
+      border: none;
+      outline: none;
+      border: toRem(1) solid $standard-border;
+      border-radius: toRem(8);
+      padding: toRem(16) toRem(20);
+      width: 100%;
+      margin-bottom: toRem(32);
+      &::placeholder {
+        color: $input-placeholder;
+      }
+    }
+    .feeds-list {
+      width: 100%;
+      @include flex(
+        $direction: column,
+        $alignItems: flex-start,
+        $justifyContent: flex-start,
+        $gap: toRem(8)
+      );
+      &-feed {
+        width: 100%;
+        border: toRem(1) solid $app-black;
+        border-radius: toRem(8);
+        padding: toRem(16);
+        @include flex(
+          $justifyContent: flex-start,
+          $alignItems: flex-start,
+          $gap: toRem(8)
+        );
+        .card-timestamp {
+            @include flex($justifyContent: flex-start, $gap: toRem(16));
+            &-label {
+              @include flex($gap: toRem(4));
+            }
+          }
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+@import "../../../styles/mixins";
+@import "../../../styles/functions";
+@import "../../../styles/variables";
+
+.new-podcast-page {
+  @include flex($direction: column, $alignItems: flex-start);
+  .page-title {
+    margin-bottom: toRem(22);
+  }
+  .upload-options {
+    @include flex($gap: toRem(20));
+    margin-bottom: toRem(24);
+    button {
+      width: toRem(210);
+    }
+    .rss-feed-upload {
+      background: $orange;
+    }
+  }
+  .option-card {
+    background: $app-white;
+    border: toRem(1) solid $standard-border;
+    border-radius: toRem(6);
+    width: 100%;
+    padding: toRem(20) toRem(32) toRem(32);
+    @include flex($direction: column, $alignItems: flex-start, $gap: toRem(18));
+    .input-link-area {
+      width: 100%;
+      position: relative;
+      border: toRem(1) solid $standard-border;
+      border-radius: toRem(8);
+      padding: toRem(6) toRem(6) toRem(6) toRem(16);
+      @include flex($justifyContent: flex-start);
+      &-field {
+        margin-left: toRem(8);
+        width: 80%;
+        border: none;
+        outline: none;
+        &::placeholder {
+            color: $input-placeholder;
+        }
+      }
+      &-button {
+        margin-left: auto;
+      }
+    }
+    .upload-file-area {
+      height: toRem(228);
+      width: 100%;
+      border: toRem(2) dashed $standard-border;
+      border-radius: toRem(6);
+      cursor: pointer;
+      @include flex($direction: column, $gap: toRem(16));
+      .text-area {
+        text-align: center;
+        @include flex($direction: column, $gap: toRem(12));
+        width: toRem(200);
+      }
+    }
+  }
+}

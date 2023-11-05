@@ -1,0 +1,13 @@
+@import "../styles/variables";
+@import "../styles/functions";
+
+.app {
+  width: 100%;
+  background: $app-background;
+}
+.container {
+  padding: toRem(60) 0;
+  max-width: toRem(1200);
+  height: inherit;
+  margin: auto;
+}

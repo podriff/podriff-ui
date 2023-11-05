@@ -1,0 +1,11 @@
+@import '../../styles/functions';
+
+.wrapper {
+  max-width: 2560px;
+  margin: auto;
+  width: 100%;
+}
+.fake-div {
+  width: 100%;
+  height: toRem(85);
+}

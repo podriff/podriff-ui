@@ -1,0 +1,98 @@
+@import "../../styles/functions";
+@import "../../styles/mixins";
+@import "../../styles/variables";
+
+.profile-page {
+  .profile-title-area {
+    width: 100%;
+    @include flex($justifyContent: space-between);
+    margin-bottom: toRem(32);
+  }
+  .new-podcasts-button {
+    .free-text {
+      padding: toRem(2) toRem(9);
+      border: none;
+      border-radius: toRem(21);
+      background: $primary-button-blend;
+    }
+  }
+  .no-podcasts-added-section {
+    width: 100%;
+    height: toRem(450);
+    background: $app-white;
+    border-radius: toRem(6);
+    border: toRem(1) solid $standard-border;
+    @include flex($direction: column, $gap: toRem(20));
+    .podcast-labels {
+      @include flex($direction: column, $gap: toRem(8));
+    }
+  }
+  .podcasts-list-section {
+    .search-area {
+      width: 100%;
+      @include flex($gap: toRem(16));
+      position: relative;
+      margin-bottom: toRem(34);
+      &-search-icon {
+        position: absolute;
+        left: toRem(8);
+      }
+      &-input {
+        background: inherit;
+        width: 100%;
+        font-family: Inter-Medium, sans-serif;
+        font-size: toRem(14);
+        outline: none;
+        border: toRem(1) solid $standard-border;
+        border-radius: toRem(8);
+        padding: toRem(10) toRem(8) toRem(10) toRem(32);
+        &::placeholder {
+          color: $input-placeholder;
+        }
+        &:focus {
+          background: $app-white;
+        }
+      }
+      &-button {
+        padding: toRem(10) toRem(18);
+      }
+    }
+    .list-area {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: toRem(34);
+      &-card {
+        background: $app-white;
+        border: toRem(1) solid $standard-border;
+        border-radius: toRem(8);
+        padding: toRem(24);
+        @include flex(
+          $direction: column,
+          $alignItems: flex-start,
+          $justifyContent: space-between,
+          $gap: toRem(18)
+        );
+        height: 100%;
+        .card-thumbnail {
+          width: 100%;
+          height: toRem(183);
+          border-radius: toRem(4);
+          object-fit: contain;
+        }
+        .card-title {
+          display: -webkit-box;
+          width: 100%;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .card-timestamp {
+          @include flex($gap: toRem(16));
+          &-label {
+            @include flex($gap: toRem(4));
+          }
+        }
+      }
+    }
+  }
+}
