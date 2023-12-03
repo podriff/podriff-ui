@@ -20,7 +20,7 @@
     border-radius: toRem(8);
   }
   &:disabled {
-    background: $input-placeholder;
+    background: $input-placeholder !important;
     cursor: not-allowed;
   }
 }

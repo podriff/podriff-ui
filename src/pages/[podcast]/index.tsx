@@ -1,23 +1,120 @@
-import { BackButton, Button, Typography } from "@/components";
+import { BackButton, Button, Loader, Typography } from "@/components";
 import styles from "./podcast.module.scss";
-import { pxToRem } from "@/utils";
-import { useState } from "react";
+import {
+  METADATA_OPTIONS,
+  PROMOTION_OPTIONS,
+  fetchWrapper,
+  pxToRem,
+} from "@/utils";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { firestoreDB } from "@/firebase";
+import { PodcastMetadata } from "@/interface/PodcastMetadata";
 
 const PodcastDetails: React.FC = () => {
-  const [selection, setSelection] = useState("transcript");
+  const [selection, setSelection] = useState<(typeof METADATA_OPTIONS)[0]>({
+    label: "Transcript",
+    value: "transcript",
+    apiParam: "transcript",
+  });
+  const [content, setContent] = useState("");
+  const [error, setError] = useState("");
+  const [loadingContent, setLoadingContent] = useState(false);
+  const [podcastMetadata, setPodcastMetadata] = useState<PodcastMetadata>({
+    docId: "",
+    name: "",
+    timeStamp: "",
+    url: "",
+    thumbnail: "",
+    email: "",
+    transcript: "",
+    description: "",
+    title: "",
+    blog: "",
+    keywords: "",
+    newsletter: "",
+    tweets: "",
+  });
+
+  const { query } = useRouter();
+  const { podcast } = query;
+
+  const fetchResults = async () => {
+    try {
+      const videoDetails = (
+        await firestoreDB
+          .collection("videos")
+          .doc(podcast as string)
+          .get()
+      ).data();
+      setPodcastMetadata(videoDetails as PodcastMetadata);
+    } catch (error: any) {
+      setError(error.message);
+    }
+  };
+
+  const loadContent = async () => {
+    try {
+      setLoadingContent(true);
+      const response = await fetchWrapper.get(
+        `https://podriff-api.onrender.com/generate?source_type=youtube&link=${podcastMetadata.url}&content_type=${selection.apiParam}`,
+        {
+          credentials: "include",
+        }
+      );
+      if (response.content) {
+        setContent(response.content);
+        const documentRef = firestoreDB
+          .collection("videos")
+          .doc(podcast as string);
+        await documentRef.set(
+          {
+            [selection.apiParam]: response.content,
+          },
+          { merge: true }
+        );
+        const data = await documentRef.get();
+        if (data.data()) {
+          setPodcastMetadata(data.data() as PodcastMetadata);
+        }
+      }
+    } catch (error: any) {
+      console.log(error);
+      setError(error.message);
+    } finally {
+      setLoadingContent(false);
+    }
+  };
+
+  useEffect(() => {
+    if (podcast) {
+      fetchResults();
+    }
+  }, [podcast]);
+
+  useEffect(() => {
+    if (podcastMetadata.url)
+      if (podcastMetadata[selection.apiParam as keyof PodcastMetadata]) {
+        setContent(
+          podcastMetadata[selection.apiParam as keyof PodcastMetadata] as string
+        );
+      } else {
+        loadContent();
+      }
+  }, [podcastMetadata, selection.apiParam]);
 
   return (
     <div className={`${styles["podcast-details"]} container`}>
       <BackButton />
       <div className={styles["title-timestamp-thumbnail"]}>
         <img
-          src="/images/sample-podcast-thumbnail.png"
+          src={podcastMetadata.thumbnail}
           alt="thumbnail"
           className={styles["podcast-thumbnail"]}
         />
         <div>
           <Typography variant="h3" style={{ marginBottom: pxToRem(8) }}>
-            #133 - How to win over audiences with fake charisma and lies
+            {podcastMetadata.name}
           </Typography>
           <div className={styles["podcast-timestamp"]}>
             <div className={styles["podcast-timestamp-label"]}>
@@ -32,10 +129,12 @@ const PodcastDetails: React.FC = () => {
                 color="black-light"
                 style={{ fontFamily: "Inter-Regular" }}
               >
-                September 7, 2023
+                {new Date(
+                  podcastMetadata.timeStamp as number
+                ).toLocaleString()}
               </Typography>
             </div>
-            <div className={styles["podcast-timestamp-label"]}>
+            {/* <div className={styles["podcast-timestamp-label"]}>
               <img
                 src={"/icons/clock-icon.svg"}
                 alt="calendar"
@@ -49,9 +148,9 @@ const PodcastDetails: React.FC = () => {
               >
                 15 minutes
               </Typography>
-            </div>
+            </div> */}
           </div>
-          <div className={styles["button-container"]}>
+          {/* <div className={styles["button-container"]}>
             <Button
               className={styles["edit-details-button"]}
               borderRadius="curved"
@@ -73,7 +172,7 @@ const PodcastDetails: React.FC = () => {
               />
               <Typography color="white">Delete this podcast</Typography>
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
       <hr className={styles["divider"]} />
@@ -83,141 +182,87 @@ const PodcastDetails: React.FC = () => {
             <Typography color="black-light" className={styles["option"]}>
               Podcast Metadata
             </Typography>
-            <div
-              className={`${styles["option"]} ${
-                selection === "transcript" ? styles["selected"] : ""
-              }`}
-              onClick={() => setSelection("transcript")}
-            >
-              <img
-                src={`/icons/transcript${
-                  selection === "transcript" ? "-filled" : ""
-                }-icon.svg`}
-                alt="transcript"
-                width={24}
-                height={24}
-              />
-              <Typography color="black">Transcript</Typography>
-            </div>
-            <div
-              className={`${styles["option"]} ${
-                selection === "show-notes" ? styles["selected"] : ""
-              }`}
-              onClick={() => setSelection("show-notes")}
-            >
-              <img
-                src={`/icons/show-notes${
-                  selection === "show-notes" ? "-filled" : ""
-                }-icon.svg`}
-                alt="show-notes"
-                width={24}
-                height={24}
-              />
-              <Typography color="black">Show Notes</Typography>
-            </div>
-            <div
-              className={`${styles["option"]} ${
-                selection === "titles" ? styles["selected"] : ""
-              }`}
-              onClick={() => setSelection("titles")}
-            >
-              <img
-                src={`/icons/titles${
-                  selection === "titles" ? "-filled" : ""
-                }-icon.svg`}
-                alt="titles"
-                width={24}
-                height={24}
-              />
-              <Typography color="black">Titles</Typography>
-            </div>
-            <div
-              className={`${styles["option"]} ${
-                selection === "keywords" ? styles["selected"] : ""
-              }`}
-              onClick={() => setSelection("keywords")}
-            >
-              <img
-                src={`/icons/keywords${
-                  selection === "keywords" ? "-filled" : ""
-                }-icon.svg`}
-                alt="keywords"
-                width={24}
-                height={24}
-              />
-              <Typography color="black">Keywords</Typography>
-            </div>
+            {METADATA_OPTIONS.map((md) => (
+              <div
+                className={`${styles["option"]} ${
+                  selection.value === md.value ? styles["selected"] : ""
+                }`}
+                onClick={() => setSelection(md)}
+                key={md.value}
+              >
+                <img
+                  src={`/icons/${md.value}${
+                    selection.value === md.value ? "-filled" : ""
+                  }-icon.svg`}
+                  alt={md.value}
+                  width={24}
+                  height={24}
+                />
+                <Typography color="black">{md.label}</Typography>
+              </div>
+            ))}
           </div>
           <hr className={styles["divider"]} />
           <div className={styles["options-section"]}>
             <Typography color="black-light" className={styles["option"]}>
               Podcast Promotion
             </Typography>
-            <div
-              className={`${styles["option"]} ${
-                selection === "blog-post" ? styles["selected"] : ""
-              }`}
-              onClick={() => setSelection("blog-post")}
-            >
-              <img
-                src={`/icons/blog-post${
-                  selection === "blog-post" ? "-filled" : ""
-                }-icon.svg`}
-                alt="blog-post"
-                width={24}
-                height={24}
-              />
-              <Typography color="black">Blog Post</Typography>
-            </div>
-            <div
-              className={`${styles["option"]} ${
-                selection === "newsletter" ? styles["selected"] : ""
-              }`}
-              onClick={() => setSelection("newsletter")}
-            >
-              <img
-                src={`/icons/newsletter${
-                  selection === "newsletter" ? "-filled" : ""
-                }-icon.svg`}
-                alt="newsletter"
-                width={24}
-                height={24}
-              />
-              <Typography color="black">Newsletter</Typography>
-            </div>
-            <div
-              className={`${styles["option"]} ${
-                selection === "socials" ? styles["selected"] : ""
-              }`}
-              onClick={() => setSelection("socials")}
-            >
-              <img
-                src={`/icons/socials${
-                  selection === "socials" ? "-filled" : ""
-                }-icon.svg`}
-                alt="socials"
-                width={24}
-                height={24}
-              />
-              <Typography color="black">Socials</Typography>
-            </div>
-            <div
-              className={`${styles["option"]} ${
-                selection === "clips" ? styles["selected"] : ""
-              }`}
-              onClick={() => setSelection("clips")}
-            >
-              <img
-                src={`/icons/clips${
-                  selection === "clips" ? "-filled" : ""
-                }-icon.svg`}
-                alt="clips"
-                width={24}
-                height={24}
-              />
-              <Typography color="black">Clips</Typography>
-            </div>
+            {PROMOTION_OPTIONS.map((pd) => (
+              <div
+                className={`${styles["option"]} ${
+                  selection.value === pd.value ? styles["selected"] : ""
+                }`}
+                onClick={() => setSelection(pd)}
+                key={pd.value}
+              >
+                <img
+                  src={`/icons/${pd.value}${
+                    selection.value === pd.value ? "-filled" : ""
+                  }-icon.svg`}
+                  alt={pd.value}
+                  width={24}
+                  height={24}
+                />
+                <Typography color="black">{pd.label}</Typography>
+              </div>
+            ))}
           </div>
+        </div>
+        <div className={styles["generated-content-container"]}>
+          {loadingContent ? (
+            <Loader />
+          ) : error ? (
+            <>
+              <div className={styles["generated-content-container-response"]}>
+                <Typography variant="span" style={{ fontSize: pxToRem(16) }}>
+                  {error}
+                </Typography>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={styles["generated-content-container-header"]}>
+                <Typography variant="h1">{selection.label}</Typography>
+                <Button>
+                  <img
+                    src="/icons/ai-regenerate-icon.svg"
+                    alt="ai-regenerate"
+                    width={22}
+                    height={22}
+                    onClick={loadContent}
+                  />
+                  <Typography color="white">AI Regenerate</Typography>
+                </Button>
+              </div>
+              <div className={styles["generated-content-container-response"]}>
+                <pre>
+                  <Typography variant="span" style={{ fontSize: pxToRem(16) }}>
+                    {content}
+                  </Typography>
+                </pre>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -62,6 +62,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: toRem(34);
       &-card {
+        cursor: pointer;
         background: $app-white;
         border: toRem(1) solid $standard-border;
         border-radius: toRem(8);

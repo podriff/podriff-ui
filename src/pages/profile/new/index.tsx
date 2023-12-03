@@ -2,8 +2,17 @@ import { BackButton, Button, Typography } from "@/components";
 import styles from "./new.module.scss";
 import { useRouter } from "next/router";
 import { pxToRem } from "@/utils";
+import { useContext, useState } from "react";
+import { AppContext } from "@/context";
+import { firestoreDB, firebase } from "@/firebase";
+import { Actions } from "@/enums/actions";
 
 const New = () => {
+  const [state, dispatch] = useContext(AppContext);
+
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const { query, ...router } = useRouter();
 
   const onUploadOptionClick = (option: string) => {
@@ -22,6 +31,79 @@ const New = () => {
         shallow: true,
       }
     );
+  };
+
+  const addVideo = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `https://jsonlink.io/api/extract?url=${url}&api_key=${process.env.NEXT_PUBLIC_METADATA_API_KEY}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        const videoSnapshot = await firestoreDB
+          .collection("videos")
+          .where("email", "==", state.user?.email)
+          .where("url", "==", url)
+          .get();
+        if (videoSnapshot.empty) {
+          firestoreDB
+            .collection("videos")
+            .add({
+              thumbnail: data.images[0],
+              name: data.title,
+              url,
+              email: state.user?.email,
+              timeStamp: new Date().getTime(),
+            })
+            .then(async () => {
+              const userSnapshot = await firestoreDB
+                .collection("users")
+                .where("email", "==", state.user?.email)
+                .get();
+              if (!userSnapshot.empty) {
+                const documentRef = firestoreDB
+                  .collection("users")
+                  .doc(userSnapshot.docs[0].id);
+                documentRef
+                  .set(
+                    {
+                      freeCreditsUsed: true,
+                    },
+                    { merge: true }
+                  )
+                  .then(async () => {
+                    dispatch({
+                      type: Actions.SET_USER,
+                      payload: {
+                        ...state.user,
+                        freeCreditsUsed: true,
+                      },
+                    });
+                    const videoSnapshot = await firestoreDB
+                      .collection("videos")
+                      .where("email", "==", state.user?.email)
+                      .where("url", "==", url)
+                      .get();
+                    const videoDoc = videoSnapshot.docs[0].id;
+                    router.push(`/${videoDoc}`);
+                    setLoading(false);
+                  });
+              }
+            })
+            .catch((error) => {
+              setLoading(false);
+              console.log(error);
+            });
+        } else {
+          setLoading(false);
+          console.log("This reccord already exists!");
+        }
+        setUrl("");
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
   };
 
   return (
@@ -47,6 +129,7 @@ const New = () => {
           buttonType="alternate"
           borderRadius="curved"
           onClick={() => onUploadOptionClick("file")}
+          disabled
         >
           <img
             src="/icons/upload-file-icon.svg"
@@ -60,6 +143,7 @@ const New = () => {
           borderRadius="curved"
           className={styles["rss-feed-upload"]}
           onClick={() => onUploadOptionClick("rss")}
+          disabled
         >
           <img
             src="/icons/rss-feed-icon.svg"
@@ -81,13 +165,19 @@ const New = () => {
               height={34}
             />
             <input
+              type="text"
               placeholder="https://youtube.com/v=QKVxZ6GAvaCfL3/"
               className={styles["input-link-area-field"]}
+              value={url}
+              defaultValue={url}
+              onChange={(e) => setUrl(e.target.value)}
             />
             <Button
               buttonType="alternate"
               borderRadius="curved"
               className={styles["input-link-area-button"]}
+              disabled={!url || loading}
+              onClick={() => addVideo()}
             >
               <Typography color="white">Add Video</Typography>
             </Button>

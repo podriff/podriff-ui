@@ -1,0 +1,36 @@
+@import "../../styles/functions";
+@import "../../styles/mixins";
+@import "../../styles/variables";
+
+.loader-wrapper {
+  width: 100%;
+  @include flex();
+  .loader {
+    border: toRem(8) solid $app-white;
+    border-radius: 50%;
+    border-top: toRem(8) solid $primary;
+    width: toRem(60);
+    height: toRem(60);
+    -webkit-animation: spin 1s linear infinite; /* Safari */
+    animation: spin 1s linear infinite;
+  }
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

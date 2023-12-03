@@ -42,6 +42,7 @@
       $justifyContent: flex-start,
       $gap: toRem(48)
     );
+    width: 100%;
     .generated-options-container {
       width: toRem(270);
       .options-section {
@@ -65,6 +66,21 @@
           }
         }
       }
+    }
+  }
+  .generated-content-container {
+    width: 100%;
+    flex: 1;
+    &-header {
+      width: 100%;
+      @include flex($justifyContent: space-between);
+      margin-bottom: toRem(24);
+    }
+    &-response {
+      padding: toRem(24) toRem(40);
+      background: $app-white;
+      border-radius: toRem(12);
+      border: toRem(1) solid $standard-border;
     }
   }
 }

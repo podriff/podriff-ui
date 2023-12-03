@@ -1,0 +1,28 @@
+@import "../../styles/functions";
+@import "../../styles/mixins";
+@import "../../styles/variables";
+
+.login-page {
+  @include flex($direction: column, $gap: toRem(32));
+  .email-input {
+    background: inherit;
+    width: toRem(500);
+    font-family: Inter-Medium, sans-serif;
+    font-size: toRem(14);
+    outline: none;
+    border: toRem(1) solid $standard-border;
+    border-radius: toRem(8);
+    padding: toRem(10);
+    &::placeholder {
+      color: $input-placeholder;
+    }
+    &:focus {
+      background: $app-white;
+    }
+  }
+  .submit-button {
+    width: toRem(500);
+    margin-bottom: toRem(8);
+    padding: toRem(8);
+  }
+}
